@@ -1,3 +1,4 @@
+# agents.py
 import os
 import io
 import logging
@@ -5,15 +6,18 @@ from crewai import Agent, Task, Crew
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 
-# Load environment variables from .env
+# Load the environment variables from .env
 load_dotenv()
-api_key = os.getenv("GROQ_API_KEY")
+groq_api_key = os.getenv("GROQ_API_KEY")
 
-# Initialize the Groq LLM
+if not groq_api_key:
+    raise ValueError("GROQ_API_KEY is not set. Please check your .env file.")
+
+# Initialize the Groq LLM with the key
 llm = ChatGroq(
     temperature=0,
     model_name="llama3-70b-8192",
-    api_key=api_key
+    groq_api_key=groq_api_key  # Explicitly passing the API key
 )
 
 # Define agents
@@ -97,3 +101,10 @@ def run_crew(topic):
     }
 
     return result
+
+# Example execution
+if __name__ == "__main__":
+    result = run_crew("The impact of AI on healthcare")
+    print(result['process_logs'])
+    print("Final Output:")
+    print(result['final_output'])
